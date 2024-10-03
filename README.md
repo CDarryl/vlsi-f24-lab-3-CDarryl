@@ -116,14 +116,7 @@ Going through the design flow is quite labor intensive and intricate. In general
 The three major CAD companies for ASIC design are: *Cadence*, *Synopsys*, and *Siemens*. Each of these companies supplies tools for all stages of the Very Large-Scale Integration (VLSI) flow (VLSI refers to complex ICs with thousands or more trasistors).
 
 
-<style type="text/css">
-.tg  {border-collapse:collapse;border-spacing:0;}
-.tg td{border-color:black;border-style:solid;border-width:1px;font-family:Arial, sans-serif;font-size:14px;
-  overflow:hidden;padding:10px 5px;word-break:normal;}
-.tg th{border-color:black;border-style:solid;border-width:1px;font-family:Arial, sans-serif;font-size:14px;
-  font-weight:normal;overflow:hidden;padding:10px 5px;word-break:normal;}
-.tg .tg-c3ow{border-color:inherit;text-align:center;vertical-align:top}
-</style>
+
 <table class="tg", align="center">
 <thead>
   <tr>
@@ -138,19 +131,19 @@ The three major CAD companies for ASIC design are: *Cadence*, *Synopsys*, and *S
     <td class="tg-c3ow">Simulation</td>
     <td class="tg-c3ow"><span style="font-style:italic">VCS</span></td>
     <td class="tg-c3ow"><span style="font-style:italic">Xcelium Logic Simulator</span></td>
-    <td class="tg-c3ow"><span style="font-style:italic">-</span></td>
+    <td class="tg-c3ow"><span style="font-style:italic">Quantus</span></td>
   </tr>
   <tr>
     <td class="tg-c3ow">Synthesis</td>
     <td class="tg-c3ow"><span style="font-style:italic">FusionCompiler (Design Complier)</span></td>
     <td class="tg-c3ow"><span style="font-style:italic">Genus</span></td>
-    <td class="tg-c3ow"><span style="font-style:italic">-</span></td>
+    <td class="tg-c3ow"><span style="font-style:italic">Oasys</span></td>
   </tr>
   <tr>
     <td class="tg-c3ow">Place and Route</td>
     <td class="tg-c3ow"><span style="font-style:italic">FusionCompiler (IC Compiler II)</span></td>
     <td class="tg-c3ow"><span style="font-style:italic">Innovus</span></td>
-    <td class="tg-c3ow"><span style="font-style:italic">-</span></td>
+    <td class="tg-c3ow"><span style="font-style:italic">Aprisa</span></td>
   </tr>
   <tr>
     <td class="tg-c3ow">Physical Layout</td>
