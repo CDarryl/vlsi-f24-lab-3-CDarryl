@@ -1,15 +1,9 @@
-# ASIC Lab 2: Simulation
+﻿# ASIC Lab 2: Simulation
 <p align="center">
-Prof. John Wawrzynek
+Prof. Daniel Van Blerkom
 </p>
 <p align="center">
-TA: Kevin He, Kevin Anderson
-</p>
-<p align="center">
-Department of Electrical Engineering and Computer Science
-</p>
-<p align="center">
-College of Engineering, University of California, Berkeley
+Department of Electrical and Computer Engineering, Cal Poly Pomona
 </p>
 
 
@@ -44,10 +38,10 @@ College of Engineering, University of California, Berkeley
 ## Overview
 
 **Objective:** 
-Simulation is a fundamental step in ASIC design and digital design in general. Different forms of simulation can happen at several stages in the design cycle, however the main two are ***behavorial*** (also called ***RTL simulation***) and ***gate-level***. In this lab, you will be introduced to both using industry tools from [Cadence](https://en.wikipedia.org/wiki/Cadence_Design_Systems). CAD tools have a steep learning curve. To ease the learning experience, we interact with the CAD tools using Hammer; a tool generated at Berkeley to simplify interaction with the ASIC design ECAD tools.
+Simulation is a fundamental step in ASIC design and digital design in general. Different forms of simulation can happen at several stages in the design cycle, however the main two are ***behavorial*** (also called ***RTL simulation***) and ***gate-level***. In this lab, you will be introduced to both. CAD tools have a steep learning curve. To ease the learning experience, we interact with the CAD tools using Hammer; a tool generated at Berkeley to simplify interaction with the ASIC design ECAD tools.
 
 **Topics Covered**
-- CAD Tools (emphasis on *VCS* and *DVE*)
+- CAD Tools (emphasis on Simulation and *GTKWave*)
 - Hammer
 - Skywater 130mm PDK
 - Behavorial RTL Simulation
@@ -57,39 +51,40 @@ Simulation is a fundamental step in ASIC design and digital design in general. D
 **Recommended Reading**
 - [Verilog Primer](https://inst.eecs.berkeley.edu/~eecs151/fa21/files/verilog/Verilog_Primer_Slides.pdf)
 
-<span style="color:red"> ***WARNING:*** **Under no circumstance should any third party information, manuals be copied from the instructional servers to personal devices. In addition, do not copy plugins from hammer that interact with third party tools to a personal device.**</span>
-
 
 ## Setup
 
 
-Prior to running any commmands you need to activate a Python 3.11 virtual environment with a Hammer (hammer-vlsi) installation and setup environment variables for the CAD tools licenses. Complete the following steps:
+Prior to running any commands you need to install the CAD tools and the Hammer code. Complete the following steps.  **Important** -- this assumes you have completed the installation of "miniconda3" from Lab 1!
 
-1. Accept the [new Github Classroom](https://inst.eecs.berkeley.edu/~eecs151/fa21/files/verilog/Verilog_Primer_Slides.pdf) assignment
-2. Clone your Github Classroom repo
+1. Accept the Github Classroom assignment
+2. Clone your Github Classroom repo into your home directory
    ```
-   cd /home/tmp/<your-eecs-username>
-   git clone git@github.com:EECS151-sp24/asic-labs-(GitHub username).git
+   cd 
+   git clone ssh://git@ssh.github.com:443/dvb-ece-cpp/vlsi-f24-lab-3-(your github id).git
    ```
-   The git clone link is also available in the box labeled *Quick setup — if you’ve done this kind of thing before* in Github
-3. Add the staff skeleton as a remote
+
+3. Execute the CAD tool installation script by typing the following, exactly as shown: 
    ```
-   git remote add skeleton https://github.com/EECS150/asic-labs-sp24.git
-   ```
-4. Pull from the staff skeleton and push to your Github Classroom repo
-   ```
-   git pull skeleton main
-   git push -u origin main
-   ```
-5. Source the course `.bashrc`
-   ```
-   source /home/ff/eecs151/asic/eecs151.bashrc
+   /data02/ECE4203/etc/ece4203_tools.sh
    ``` 
-6. Verify Hammer was installed by running the following:
-    ``` 
+   The script will take a while to download the tools and install them.   You will only need to do this once! (hopefully)
+4. Now, activate the new Conda environment by typing:
+   ``` 
+   conda activate ece4203
+   ```
+   **You will need to execute this command every time you log back in to the HPC.**
+   Notice that the command prompt has changed and now has `(ece4203)` at the start.  For example, mine looks like this:
+
+   "(ece4203) dvanblerkom@commander ~ $ "
+
+   If you don't have (ece4203) at the start of the command line, none of the tools will work.
+   
+5. Verify Hammer was installed by running the following:
+     ``` 
     hammer-vlsi -h 
-    ```
-    The output should be 
+   ```
+   The output should be 
 
     ```
     usage: hammer-vlsi [-h] [-e ENVIRONMENT_CONFIG] [-p CONFIGS] [-l LOG]
@@ -97,14 +92,6 @@ Prior to running any commmands you need to activate a Python 3.11 virtual enviro
                     [--par_rundir PAR_RUNDIR] [--drc_rundir DRC_RUNDIR]
                     [--lvs_rundir LVS_RUNDIR] [--sim_rundir SIM_RUNDIR]
                     ...
-    ```
-7. Verify environment variables for CAD tools are setup correctly:
-    ```
-    echo $CALIBRE_HOME
-    ```
-    The output should be: 
-    ```
-    /share/instsww/mgc/calibre2017/aoi_cal_2017.4_19.14
     ```
 
 ## ASIC Design Flow
@@ -192,14 +179,15 @@ The three major CAD companies for ASIC design are: *Cadence*, *Synopsys*, and *S
 </tbody>
 </table>
 
-It is common to utilize different tools for different stages of the design flow. This is possble because the tools typically can write out to common interchange file formats that can be consumed by other vendors’ tools, or they provide utilities such that files can be converted to different formats. For example, a design may use Synopsys *VCS* for simulation, Cadence *Genus* and *Innovus* for synthesis and place-and-route, respectively, and Mentor *Calibre* for DRC and LVS. We will gain experience using some of these tools in subsequent labs.
+It is common to utilize different tools for different stages of the design flow. This is possible because the tools typically can write out to common interchange file formats that can be consumed by other vendors’ tools, or they provide utilities such that files can be converted to different formats. For example, a design may use Synopsys *VCS* for simulation, Cadence *Genus* and *Innovus* for synthesis and place-and-route, respectively, and Mentor *Calibre* for DRC and LVS.
+Unfortunately, at the moment, CalPoly does not have licenses or support for industrial VLSI tools.  We will be using Open Source tools, which provide some of the functionality of the full industrial versions. 
 
 ### Hammer
-In this course we will use an ASIC design framework developed here at Berkeley called Hammer. Hammer abstracts away tool- (Cadence, Synopsys, Mentor, etc.) and technology- (TSMC, Intel, etc.) specific considerations away from ASIC design. The philosophy of Hammer aims to maximize reusability of design intent between projects that may have differently underlying tool infrastructures and target different process technologies. Documentation about Hammer philosophy and usage is at Hammer [website](hammer-vlsi.readthedocs.io).
+In this course we will use an ASIC design framework developed at Berkeley called Hammer. Hammer abstracts away tool- (Cadence, Synopsys, Mentor, etc.) and technology- (TSMC, Intel, etc.) specific considerations away from ASIC design. The philosophy of Hammer aims to maximize reusability of design intent between projects that may have differently underlying tool infrastructures and target different process technologies. Documentation about Hammer philosophy and usage is at Hammer [website](hammer-vlsi.readthedocs.io).
 
 Hammer consumes serialized configuration files in YAML or JSON format, which are used as intermediate representation (IR) languages between higher-level physical design generators and the underlying scripts that the ASIC design flow tools require. In this lab repository, you will see a set of YAML files (*inst-env.yaml*, *sky130.yml*, *design.yml*, and a few *sim-\<type\>.yml*) that contain Hammer IR for our design implementation. Of these files, you will only interact with the *sim-\<type\>.yml* files to configure your simulation flow in this lab. The sources for this lab are contained in the src folder, and some special non-Verilog files will be explained later.
 
-> **Note:** The version of Hammer used in this course may deviate from public or "main" Hammer. Please reference the public [repository](https://github.com/ucb-bar/hammer) if you are interested in the latest, consistent source.
+> **Note:** The version of Hammer used in this course has been modified from the public or "main" Hammer. Please reference the public [repository](https://github.com/ucb-bar/hammer) if you are interested in the latest, consistent source.
 
 ## Skywater 130
 
@@ -244,9 +232,8 @@ initial begin
 end
 ```
 
-The first thing to notice are the system tasks: `$vcdpluson`, `$vcdplusoff`, and `$finish` (all system tasks begin with `$`).
+The first thing to notice are the system tasks:  `$finish` (all system tasks begin with `$`).
 
-- `$vcdpluson` and `$vcdplusoff` starts and end the vpd (waveform format) file generation 
 - `$finish` ends the simulation
 
 The remaining lines drive the register `In` with different values on the negative edge of the simulated clock. In this block, the lines are executed sequential because`@(negedge clk)` call waits until the next negative edge of the clock before executing the code on its line.
@@ -319,32 +306,18 @@ make sim-rtl
 
 ### View Waveform
 
-After completing the simulation, VCS dumps the waveforms to a file: `build/sim-rundir/vcdplus.vpd`. In this course, we use Discovery Visualization Environment (DVE) to view our waveforms. It has a GUI so use X2go to remote into the server. 
+After completing the simulation, VCS dumps the waveforms to a file: `build/sim-rundir/vcdplus.vpd`. In this course, we use GTKWave to view our waveforms. It has a GUI that will create an X11 Window on your computer. 
 
 ```shell
 cd build/sim-rundir
-dve -vpd vcdplus.vpd &
+gtkwave --dump=verilog.dump &
 ```
-
-When DVE pops up, you should see the window below. There are four main panes:
-
-1. The *Hierarchy* pane on the far left list the design hierarchy. All modules that simulated starting with the testbench and a child modules instantiated.
-2. The *Data* pane to right of the *Hierarchy* pane lists all signals that were marked and record during simulation that are now viewable in a waveform window.
-3. The *Editor* is the far right pane. Double clicking any module in the module *Hierarchy* pane will bring up the source code in the *Editor* pane. You can select individual signals and choose specific actions.
-4. The *Console* pane is at bottom which has different windows, most importantly the *Log* window. You can also enter DVE or UCLI commands here
-
-<p align="center">
-<img src="./figs/dve.png" width="700" />
-</p>
-
-
-An important feature to note is the timescale which is located right above the *Hierarhcy* pane. In the figure, it is the textfield and next t dropdown that says "x10ps". This timescale the units of time that the signals are plotted on in the waveform. Change this to be in units of nanoseconds.
 
 Let's create a waveform. 
 
 1. Select the `fir_tb` in the *Hierarchy* pane
 2. Select the In, Out and clk signals in the *Data* pane 
-3. Right click the selection, and click "Add To Waves", then “New Wave View” in the dropdown
+3. Click "Insert" to add the selected waveforms to the graph.
 
 
 <p align="center">
@@ -358,21 +331,15 @@ After the window opens, you may need to adjust the zoom settings from "View — 
 A commonly used feature is changing the radix of a given signal for easier interpretation. Change the radix of the Out signal to be 2’s complement:
 
 1. Right-click the Out signal
-2. Select "Set Radix" from the dropdown
-3. Select "Twos complement"
+2. Select "Data Format" from the dropdown
+3. Select "Signed Decimal"
 
 Another commonly used feature is display the digital signal in an analog view. Change the view of the Out signal to analog:
 
 1. Right-click the Out signal
-2. Select "Set Draw Style Scheme" from the dropdown
-3. Select "Analog"
+2. Select "Data Format" from the dropdown
+3. Select "Analog" and "Step"
      
-The scale might look off since the signal does not reach full scale values. Let's fix that by changing the properties:
-
-1. Right-click the Out signal
-2. Select "Properties" from the dropdown
-3. Set the Analog Waveform properties to be User, and set the Min to be -32 and the max to be 32. 
-
 Your waveform should now be a replication of the one shown below. 
 
 <p align="center">
@@ -414,7 +381,7 @@ Another common feature is changing the color of the signals. We will not do that
 
 
 > **TODO:**  
-> 1. Rename the vpd file from `vcdplus.vpd` to `vcdplus_orig.vpd`. 
+> 1. Rename the vpd file from `verilog.dump` to `verilog_orig.dump`. 
 > 2. Run a simulation using `fir_tb_file.v` testbench. Replace `fir_tb.v` with `fir_tb_file.v` under the `input_files` key in `sim-rtl.yml`. Next, change the value for the key `tb_name` to `fir_tb_file`. Finally, run `make sim-rtl` again.  
 
 
@@ -449,20 +416,19 @@ This make command is for the same target, however in this invocation we are over
 
 ### Compare Behavorial and Gate Level Simulations
 
-Why should you simulation pre and post-synthesis is the logic does not change? Timing. 
+Why should you run simulation pre and post-synthesis if the logic does not change? Timing. 
 
-Open both waveforms (the one from RTL simulation and the other from gate level simulation), or screenshoot one and open the other in DVE. Notice that the waveforms look similar, but not exactly the same. Let’s see why.
+Open both waveforms (the one from RTL simulation and the other from gate level simulation), or screenshoot one and open the other in GTKWave. Notice that the waveforms look similar, but not exactly the same. Let’s see why.
 
 By default, the logic gates behave ideally. In this context, "ideally" means the output is valid *instantly* when a new input is presented. Depending on the operating conditions of the chip (voltage, process variation, temperature), the delay through a gate will be different. CAD tools calculate the delay for you, and annotate the delay onto the gates using an SDF file like the one you just saw. 
 
-Gate-level simulations are annotated with timing information so signal propogation matters. In other words, gate output *does not change instantly* with a new input, the signal must propogate through the gate. This effect the simulation in two ways: 
+Gate-level simulations are annotated with timing information so signal propagation matters. In other words, gate output *does not change instantly* with a new input, the signal must propagate through the gate. This effect the simulation in two ways: 
 
-1.  The input must propogate through the gate at the rising edge. Therefore, the clk-q time matters (clk-q is the latency between the rising edge of the clock, until a valid output appears gate output)
+1.  The input must propagate through the gate at the rising edge. Therefore, the clk-q time matters (clk-q is the latency between the rising edge of the clock, until a valid output appears gate output)
 
-    To see the consquence of annotated simultions, first configure the waveforms so that you see at least the `clk` and `delay_chain0` signals (hint: you may need to go down to the DUT level of hierarchy in the left pane). Zoom into the first rising edge of `delay_chain0`, around the 50ns mark. Recall that in an RTL-level sim, logic gates behave ideally (output change instantly). This means that the flip-flop output `delay_chain0` would change state (given an input that has changed) perfectly synchronously to the rising edge of `clk`. However, you will see here that the transition edge of `delay_chain0` is *some amount of time after the rising edge* of `clk`.This delay was annotated in the SDF as the flop’s clk-q time (`IOPATH CLK Q`, for rising and falling edges) and properly simulated in VCS.
+    To see the consequence of annotated simulations, first configure the waveforms so that you see at least the `clk` and `delay_chain0` signals (hint: you may need to go down to the DUT level of hierarchy in the left pane). Zoom into the first rising edge of `delay_chain0`, around the 50ns mark. Recall that in an RTL-level sim, logic gates behave ideally (output change instantly). This means that the flip-flop output `delay_chain0` would change state (given an input that has changed) perfectly synchronously to the rising edge of `clk`. However, you will see here that the transition edge of `delay_chain0` is *some amount of time after the rising edge* of `clk`.This delay was annotated in the SDF as the flop’s clk-q time (`IOPATH CLK Q`, for rising and falling edges) and properly simulated in VCS.
 
-    Try looking at some other signals and think about why some signals have more delay than others. Also try out some of the other options in the wave viewer to try and figure out what is going on. If you get stuck on anything that you are trying to do, you can look at the Synopsys DVE User Guide in the `eecs151` home directory:
-    `/home/ff/eecs151/labs/manuals/dve_ug.pdf`.
+    Try looking at some other signals and think about why some signals have more delay than others. Also try out some of the other options in the wave viewer to try and figure out what is going on. 
 
 2.  Since signal propogration delay matter slower clock periods are needed. Examining `sim-gl-syn.yml` will reveal that `CLOCK_PERIOD=20.00` ns. Because Sky130 is a legacy process, operating at 1 GHz would produce errors.
 
@@ -515,7 +481,7 @@ Power is arguably the most important metric in modern chip design as mobile appl
 
 Normally, the most accurate power analysis results come from simulating after place-and-route. For now, we have provided a design that has been pushed through place-and-route and post place-and-route simulation outputs in `skel/src/post-par-sim`.
 
-To perform power analysis with Hammer, we must specify a few more things. Take a look at `sim-gl-par.yml` in the `skel` subdirectory. In addition to the things added in `sim-gl-syn.yml`, there is a new namespace `power` which contains keys that specify *Switching Activity Interchange Format (SAIF)* files, *Standard Parasitic Exchange Format (SPEF)* files, and a layout database. The layout database and SPEF files are generated from the place-and-route tool, Innovus.
+To perform power analysis with Hammer, we must specify a few more things.  There is a new namespace `power` which contains keys that specify *Switching Activity Interchange Format (SAIF)* files, *Standard Parasitic Exchange Format (SPEF)* files, and a layout database. The layout database and SPEF files are generated from the place-and-route tool, Innovus.
 
 
 - "*Standard Parasitic Exchange Format (SPEF) contains the parasitic information of a design(R, L, and C) in an ASCII file*". Skimming through the SPEF files, you can see the words CAP and RES everywhere; these are annotations of the parasitic capacitances and resistances caused by physical layout and connections of logic gates. 
@@ -533,7 +499,7 @@ and scroll to the bottom of the file. The total power is grouped into three type
 
 - *Leakage power:* Power dissipated in logic gates when they are not switching. Logic gates have finite resistance between power and ground even when they’re totally static!
 
-Below that first table is a breakdown into types of cells. In our FIR, we have a couple of sequential cells (delay chain flip-flops) but many more combinational cells (adder trees), hence it is reasonable that our power is dominated by combinational logic.
+Below that first table is a breakdown into types of cells. In our FIR, we have a couple of sequential cells (delay chain flip-flops) but many more combinatorial cells (adder trees), hence it is reasonable that our power is dominated by combinatorial logic.
 
 
 ## Questions 
@@ -544,7 +510,7 @@ Below that first table is a breakdown into types of cells. In our FIR, we have a
 
 <ol type="a">
 <li>
-Complete the timing diagram below and create a schematic equivalant to the Verilog module below. 
+Complete the timing diagram below and create a schematic equivalent to the Verilog module below. 
 
 ```verilog
 module dut (
@@ -590,7 +556,7 @@ Create a Verilog module to represent the schematic. It should use a single flip-
 
 ### Question 2: Understand Testbenches
 
-Testbenches useful to primarily for unit tests. Test your understanding of some basic of writing a testbench using `fir_tb.v`. Feel free to search for anwers online.
+Testbenches useful to primarily for unit tests. Test your understanding of some basic of writing a testbench using `fir_tb.v`. Feel free to search for answers online.
 
 <ol type="a">
 <li> How does the <code>inital</code> block work?</li>
@@ -619,7 +585,7 @@ Correlate the SDF annotated timing to the waveform from the gate level simulatio
 <li><code>delay_step0</code> is the first flip-flop in a chain. What is the output port name of this flip-flop, and how wide is this port? 
 </li>
 
-<li>Open the <code>vcdplus.vpd</code> file (should be from the gate level simulation) and examine the output of the flip-flop at around 50ns. Calculate the delay of the output transition relative to the input clock's rising edge.
+<li>Open the <code>verilog.dump</code> file (should be from the gate level simulation) and examine the output of the flip-flop at around 50ns. Calculate the delay of the output transition relative to the input clock's rising edge.
 </li>
 
 <li>Can you correlate this against the delay in the SDF file by identifying the delay in the SDF file?
@@ -698,6 +664,8 @@ Compare the reports with SAIF annotation you just viewed against the analogous r
 
 
 ## Acknowledgement
+
+Rewritten/adjusted for CalPoly Pomona ECE4203 by Dr. Daniel Van Blerkom.
 
 This lab is the result of the work of many EECS151/251 GSIs over the years including:
 Written By:
