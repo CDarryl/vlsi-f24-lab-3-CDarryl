@@ -313,12 +313,6 @@ Let's create a waveform.
 3. Click "Insert" to add the selected waveforms to the graph.
 
 
-<p align="center">
-<img src="./figs/new_wave.png" width="700" />
-</p>
-<!-- ![new_waveform](./figs/new_wave.png) -->
-
-A screenshot of how the waveform window should looks is shown below.
 After the window opens, you may need to adjust the zoom settings from "View — Zoom" or the corresponding buttons on the toolbar. The picture below displays the output of the FIR filter as a step waveform. 
 
 A commonly used feature is changing the radix of a given signal for easier interpretation. Change the radix of the Out signal to be 2’s complement:
