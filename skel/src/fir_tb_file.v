@@ -5,24 +5,27 @@ module fir_tb_file();
 wire signed [3:0] In;
 wire signed [15:0] Out;
 reg clk;
+reg rst;
 
 reg [4:0] index_counter;
 initial index_counter = 0;
 wire signed [15:0] Out_correct;
-reg signed [15:0] Out_correct_array [25:0];
-reg signed [3:0] input_array [25:0];
+reg signed [15:0] Out_correct_array [0:25];
+reg signed [3:0] input_array [0:25];
 
 initial clk = 0;
 always #(`CLOCK_PERIOD/2) clk <= ~clk;
 
-fir dut ( .In(In), .clk(clk), .Out(Out) );
+fir dut ( .In(In), .clk(clk), .Out(Out), .rst(rst) );
 
 
 
 initial begin
-$vcdpluson;
+//$vcdpluson;
+   rst <= 1'b1;
+ @(negedge clk) rst <= 1'b0;
  repeat (26) @(negedge clk);
-$vcdplusoff;
+//$vcdplusoff;
 $finish;
 
 end
