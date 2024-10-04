@@ -299,7 +299,7 @@ make sim-rtl
 
 ### View Waveform
 
-After completing the simulation, VCS dumps the waveforms to a file: `build/sim-rundir/vcdplus.vpd`. In this course, we use GTKWave to view our waveforms. It has a GUI that will create an X11 Window on your computer. 
+After completing the simulation, the simulator dumps the waveforms to a file: `build/sim-rundir/verilog.dump`. In this course, we use GTKWave to view our waveforms. It has a GUI that will create an X11 Window on your computer. 
 
 ```shell
 cd build/sim-rundir
