@@ -577,7 +577,7 @@ Does the hardware continue to function correctly?
 <li>
 What is the shortest period (faster clock frequency) where the FIR still functions correctly (i.e. meets timing)?
 
-> **Note:** Instead of closing and reopening DVE each period change, simple reloading the waveform database. Click "File", the "Reload Databases" to show the new waveforms after each simulation run.
+> **Note:** Instead of closing and reopening GTKWave each period change, simple reloading the waveform database. Click "File", the "Reload Databases" to show the new waveforms after each simulation run.
 </li> 
 
 <li>
