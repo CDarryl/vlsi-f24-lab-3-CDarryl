@@ -1,8 +1,5 @@
 ﻿# ASIC Lab 2: Simulation
 <p align="center">
-Prof. Daniel Van Blerkom
-</p>
-<p align="center">
 Department of Electrical and Computer Engineering, Cal Poly Pomona
 </p>
 <p align="center">
