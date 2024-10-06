@@ -1,4 +1,4 @@
-﻿# ASIC Lab 2: Simulation
+﻿# ASIC Lab 3: Simulation
 <p align="center">
 ECE4203
 </p>
