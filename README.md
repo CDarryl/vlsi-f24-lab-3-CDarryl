@@ -1,5 +1,8 @@
 ﻿# ASIC Lab 2: Simulation
 <p align="center">
+ECE4203
+</p>
+<p align="center">
 Department of Electrical and Computer Engineering, Cal Poly Pomona
 </p>
 <p align="center">
@@ -494,6 +497,22 @@ module dut (
     assign tmp = (Z & X) | A;
   
 endmodule
+```
+
+Note that each of the REGISTER_R modules instantiated above is simply a 1-bit flip-flop; the module definition look like this:
+
+```verilog
+// Register with reset value
+module REGISTER_R(q, d, rst, clk);
+   parameter N = 1;
+   parameter INIT = {N{1'b0}};
+   output reg [N-1:0] q;
+   input [N-1:0]      d;
+   input              rst, clk;
+   always @(posedge clk)
+     if (rst) q <= INIT;
+     else q <= d;
+endmodule // REGISTER_R
 ```
 
 <p align="center">
