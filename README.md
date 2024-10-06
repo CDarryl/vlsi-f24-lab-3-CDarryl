@@ -5,6 +5,9 @@ Prof. Daniel Van Blerkom
 <p align="center">
 Department of Electrical and Computer Engineering, Cal Poly Pomona
 </p>
+<p align="center">
+Adapted from UCB EECS150 (Go Bears!)
+</p>
 
 
 ## Table of contents
@@ -131,7 +134,7 @@ The three major CAD companies for ASIC design are: *Cadence*, *Synopsys*, and *S
     <td class="tg-c3ow">Simulation</td>
     <td class="tg-c3ow"><span style="font-style:italic">VCS</span></td>
     <td class="tg-c3ow"><span style="font-style:italic">Xcelium Logic Simulator</span></td>
-    <td class="tg-c3ow"><span style="font-style:italic">Quantus</span></td>
+    <td class="tg-c3ow"><span style="font-style:italic">Questa</span></td>
   </tr>
   <tr>
     <td class="tg-c3ow">Synthesis</td>
@@ -335,14 +338,6 @@ Your waveform should now be a replication of the one shown below.
 
 Another common feature is changing the color of the signals. We will not do that here, but it important to know the simulators will automatically color signals based upon taken values:
 
-<style type="text/css" algin="center">
-.tg  {border-collapse:collapse;border-spacing:0;}
-.tg td{border-color:black;border-style:solid;border-width:1px;font-family:Arial, sans-serif;font-size:14px;
-  overflow:hidden;padding:10px 5px;word-break:normal;}
-.tg th{border-color:black;border-style:solid;border-width:1px;font-family:Arial, sans-serif;font-size:14px;
-  font-weight:normal;overflow:hidden;padding:10px 5px;word-break:normal;}
-.tg .tg-c3ow{border-color:inherit;text-align:center;vertical-align:top}
-</style>
 <table class="tg">
 <thead>
   <tr>
@@ -384,11 +379,11 @@ To simulate using the gate-level netlist, you simply need to make a few changes 
 - two JSON files
 - a Standard Delay Format (SDF) file
 
-Hammer consumes the two JSON files in order to generate a Unified Command-Line Interface (UCLI) script that tells VCS to force the synthesized flip-flops into a valid initial state before starting the simulation. This is required because Verilog simulators cannot simulate with unknown ’X’ valued inputs. 
+Hammer consumes the two JSON files in order to generate a Unified Command-Line Interface (UCLI) script that tells the simulator to force the synthesized flip-flops into a valid initial state before starting the simulation. This is required because Verilog simulators cannot simulate with unknown ’X’ valued inputs. 
 
 > **Note:** The SDF file is an output from the synthesis tool that annotates delays according to the synthesized gates.
 
-> **Note:** Under the hood, Hammer has already included the Verilog models of the standard cells from the Sky130 PDK. You will learn more about these standard cells in the next lab, but just know that they are required because the gate-level circuit contains instances of the technology’s standard cells, and *VCS* must know the Verilog definition of those cells. The extra options in the new *VCS* section of the Makefile are simply to deal with these standard cell models.
+> **Note:** Under the hood, Hammer has already included the Verilog models of the standard cells from the Sky130 PDK. You will learn more about these standard cells in the next lab, but just know that they are required because the gate-level circuit contains instances of the technology’s standard cells, and the simulator must know the Verilog definition of those cells. The extra options in the simulator section of the Makefile are simply to deal with these standard cell models.
 
 Now, change directories to the `skel` subdirectory and run the make command below:
 
@@ -413,7 +408,7 @@ Gate-level simulations are annotated with timing information so signal propagati
 
 1.  The input must propagate through the gate at the rising edge. Therefore, the clk-q time matters (clk-q is the latency between the rising edge of the clock, until a valid output appears gate output)
 
-    To see the consequence of annotated simulations, first configure the waveforms so that you see at least the `clk` and `delay_chain0` signals (hint: you may need to go down to the DUT level of hierarchy in the left pane). Zoom into the first rising edge of `delay_chain0`, around the 50ns mark. Recall that in an RTL-level sim, logic gates behave ideally (output change instantly). This means that the flip-flop output `delay_chain0` would change state (given an input that has changed) perfectly synchronously to the rising edge of `clk`. However, you will see here that the transition edge of `delay_chain0` is *some amount of time after the rising edge* of `clk`.This delay was annotated in the SDF as the flop’s clk-q time (`IOPATH CLK Q`, for rising and falling edges) and properly simulated in VCS.
+    To see the consequence of annotated simulations, first configure the waveforms so that you see at least the `clk` and `delay_chain0` signals (hint: you may need to go down to the DUT level of hierarchy in the left pane). Zoom into the first rising edge of `delay_chain0`, around the 50ns mark. Recall that in an RTL-level sim, logic gates behave ideally (output change instantly). This means that the flip-flop output `delay_chain0` would change state (given an input that has changed) perfectly synchronously to the rising edge of `clk`. However, you will see here that the transition edge of `delay_chain0` is *some amount of time after the rising edge* of `clk`.This delay was annotated in the SDF as the flop’s clk-q time (`IOPATH CLK Q`, for rising and falling edges) and properly simulated.
 
     Try looking at some other signals and think about why some signals have more delay than others. Also try out some of the other options in the wave viewer to try and figure out what is going on. 
 
@@ -451,16 +446,6 @@ Above is a single cell defintion from `skel/src/post-syn/fir.mapped.sdf` at line
 
 The format of the delay is `minimum:typical:maximum`. The min/max values refer to different operating regions. We will be discussed these more detail in future labs. Note that this SDF file only specifies maximum delays, which is generally what we want because we need to simulate the worst-case conditions (more on that in future labs). For this specific gate, the SDF file indicates that there will be a delay of either
 160ps or 111ps, <!---tech--> depending on whether the data is transitioning from low to high or from high to low. We know that these delays are in picoseconds because of the declaration on line 12 of the SDF file.
-
-<!-- Dropdown providing more details about SDF input to VCS -->
-<details>
-  <summary>More details on using SDF with CAD tools</summary>
-  
-To tell the simulator about these delays, we must use the `+sdfverbose -sdf max:fir:<path/to/fir.mapped.sdf>` VCS options (auto-generated by Hammer). Other VCS flags that Hammer auto-generates for gate-level simulation are `+neg_tchk` and `-negdelay`. In regular RTL-level simulation, all the aforementioned flags are replaced by `+notimingcheck` and `+delay_mode_zero` instead.
-
-Remember that previously we mentioned the timescale option. This is passed to VCS as a `-timescale` flag with the value `1ns/10ps`, which means that a delay of 1 would correspond to an actual delay of 1ns, with a simulation step resolution of 10ps.
-</details>
-
 
 
 ## Power Analysis
