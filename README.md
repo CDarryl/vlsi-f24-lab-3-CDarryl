@@ -584,7 +584,7 @@ Correlate the SDF annotated timing to the waveform from the gate level simulatio
 
 ### Question 5: SDF and Visualization of Setup Time Violations
 
-Examine the non-zero delays in timing annotated simulations. Clock frequency selection must consider gate delay. If it frequency is too high there will be setup timing violations. Edit `sim-gl-syn.yml` to lower the clock period to 5ns (`CLOCK PERIOD=5.00`). Now, simulate again. 
+Examine the non-zero delays in timing annotated simulations. Clock frequency selection must consider gate delay. If the frequency is too high there will be setup timing violations. Edit `sim-gl-syn.yml` to lower the clock period to 5ns (`CLOCK PERIOD=5.00`). Now, simulate again. 
 
 <ol type="a">
 <li>
@@ -598,7 +598,7 @@ What is the shortest period (faster clock frequency) where the FIR still functio
 </li> 
 
 <li>
-Replace the value for the "sdf_file" key in in <code>sim-gl-syn.yml</code> with <code>fir.mapped_hold.sdf</code> (i.e. "sdf_file"  <code>fir.mapped_hold.sdf</code>"). This will run the simulation with a different delay file, which intentionally has an error in it. Re-run the gate-level simulation. You should now have two different vpd files, and you can load them in the DVE waveform viewer to see the differences. Add all of the <code>delay_chain</code> signals for both vpd files. Zoom into the clock edges near 52ns into the simulation. There should be a significant difference between the two vpd files, and one of them will have a signal that is incorrectly getting captured on the wrong cycle. This is an exaggerated case of a hold time violation, which occurs when a specific delay path is too small relative to another. <b>Submit a screenshot</b>.
+Replace the value for the "sdf_file" key in <code>sim-gl-syn.yml</code> with <code>fir.mapped_hold.sdf</code> (i.e. "sdf_file"  <code>fir.mapped_hold.sdf</code>"). This will run the simulation with a different delay file, which intentionally has an error in it. Re-run the gate-level simulation. You should now have two different dump files, and you can load them in the GTKWave waveform viewer to see the differences. Add all of the <code>delay_chain</code> signals for both vpd files. Zoom into the clock edges near 52ns into the simulation. There should be a significant difference between the two dump files, and one of them will have a signal that is incorrectly getting captured on the wrong cycle. This is an exaggerated case of a hold time violation, which occurs when a specific delay path is too small relative to another. <b>Submit a screenshot</b>.
 </li>
 </ol>
 
