@@ -176,7 +176,8 @@ The three major CAD companies for ASIC design are: *Cadence*, *Synopsys*, and *S
 </table>
 
 It is common to utilize different tools for different stages of the design flow. This is possible because the tools typically can write out to common interchange file formats that can be consumed by other vendors’ tools, or they provide utilities such that files can be converted to different formats. For example, a design may use Synopsys *VCS* for simulation, Cadence *Genus* and *Innovus* for synthesis and place-and-route, respectively, and Mentor *Calibre* for DRC and LVS.
-Unfortunately, at the moment, CalPoly does not have licenses or support for industrial VLSI tools.  We will be using Open Source tools, which provide some of the functionality of the full industrial versions. 
+
+Unfortunately, at the moment, CalPoly does not have licenses or support for industrial VLSI tools.  We will be using open source tools, which provide some of the functionality of the full industrial versions. The open source simulator we are using is CVC64; the open source viewer is GTKWave.
 
 ### Hammer
 In this course we will use an ASIC design framework developed at Berkeley called Hammer. Hammer abstracts away tool- (Cadence, Synopsys, Mentor, etc.) and technology- (TSMC, Intel, etc.) specific considerations away from ASIC design. The philosophy of Hammer aims to maximize reusability of design intent between projects that may have differently underlying tool infrastructures and target different process technologies. Documentation about Hammer philosophy and usage is at Hammer [website](hammer-vlsi.readthedocs.io).
@@ -499,6 +500,10 @@ module dut (
 endmodule
 ```
 
+<p align="center">
+<img src="./figs/q1_a.png" width="300" />
+</p>
+
 Note that each of the REGISTER_R modules instantiated above is simply a 1-bit flip-flop; the module definition look like this:
 
 ```verilog
@@ -514,10 +519,6 @@ module REGISTER_R(q, d, rst, clk);
      else q <= d;
 endmodule // REGISTER_R
 ```
-
-<p align="center">
-<img src="./figs/q1_a.png" width="300" />
-</p>
 </li>
 
 <li>
@@ -547,8 +548,8 @@ Create a Verilog module to represent the schematic. It should use a single flip-
 Testbenches useful to primarily for unit tests. Test your understanding of some basic of writing a testbench using `fir_tb.v`. Feel free to search for answers online.
 
 <ol type="a">
-<li> How does the <code>inital</code> block work?</li>
-<li> How come we didn't use an <code>inital</code> block in the FIR to force the registers to a valid state? (Hint: what happens to a module with <code>initial</code> blocks during synthesis?)</li>
+<li> How does the <code>initial</code> block work?</li>
+<li> How come we didn't use an <code>initial</code> block in the FIR to force the registers to a valid state? (Hint: what happens to a module with <code>initial</code> blocks during synthesis?)</li>
 <li>Register <code>In</code> is driven on the negative edge of the clock. Why not the positive edge? Would this cause a violation? If so, what type?</li>
 <li> In the line generate the simulated clock, a special operator <code>#</code> is used. What is this operator?</li>
 <li> Is the line generating the clock a continuous assign statement? </li>
@@ -557,10 +558,10 @@ Testbenches useful to primarily for unit tests. Test your understanding of some 
 
 ### Question 3: Writing a testbench
 
-Create a testbench for the module you created for Question 1a. **Your testbench should be it's own Verilog module in a separate file.** Instantiate your DUT within the testbench rather than duplicating functionality. It should ***include initial conditions*** for the input. The simulator's waveform to your answer from Question 1a. 
+Create a testbench for the module you created for Question 1a. **Your testbench should be it's own Verilog module in a separate file.** Instantiate your DUT within the testbench rather than duplicating functionality. It should ***include initial conditions*** for the input. Use the simulator's waveform to your answer from Question 1a. 
 
 <ol type="a">
-<li>Submit your Verilog testbench and a screenshot of the simulation waveforms showing all of the input and output pins.
+<li>Submit your Verilog testbench.
 </li>
 </ol>
 
